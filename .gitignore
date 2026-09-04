@@ -1,0 +1,17 @@
+models/bert_sentiment/
+models/bert_sentiment_exp2/
+models/emotion_model/
+
+models/*/checkpoint-*/
+
+.env
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.vscode/
+*.pt
+*.pth
+.DS_Store
+Thumbs.db
+data/raw/training.1600000.processed.noemoticon.csv

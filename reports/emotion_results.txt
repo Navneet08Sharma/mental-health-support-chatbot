@@ -1,0 +1,27 @@
+EMOTION DETECTION MODEL RESULTS
+==================================================
+
+Model: distilbert-base-uncased
+Epochs: 3
+Batch size: 16
+Learning rate: 2e-05
+FP16: True
+
+Emotion labels:
+0: sadness
+1: joy
+2: love
+3: anger
+4: fear
+5: surprise
+
+Evaluation results:
+eval_loss: 0.1752021312713623
+eval_accuracy: 0.9285
+eval_precision: 0.9281759351809801
+eval_recall: 0.9285
+eval_f1: 0.9272754023817917
+eval_runtime: 1.024
+eval_samples_per_second: 1953.048
+eval_steps_per_second: 122.066
+epoch: 3.0

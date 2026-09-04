@@ -1,0 +1,31 @@
+EMOTION DETECTION MODEL V2 RESULTS
+============================================================
+
+Base model: distilbert-base-uncased
+Epochs: 3
+Batch size: 16
+Learning rate: 2e-05
+Maximum sequence length: 128
+FP16: True
+Original training examples: 16000
+Custom augmentation examples: 75
+Combined training examples: 16075
+
+Emotion labels:
+0: sadness
+1: joy
+2: love
+3: anger
+4: fear
+5: surprise
+
+Evaluation results:
+eval_loss: 0.18229267001152039
+eval_accuracy: 0.9285
+eval_precision: 0.9282715878942033
+eval_recall: 0.9285
+eval_f1: 0.9281937043254506
+eval_runtime: 0.9449
+eval_samples_per_second: 2116.586
+eval_steps_per_second: 132.287
+epoch: 3.0

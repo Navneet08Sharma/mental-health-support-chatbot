@@ -1,0 +1,22 @@
+BERT SENTIMENT MODEL RESULTS
+==================================================
+
+Model: bert-base-uncased
+Epochs: 2
+Training samples: 89847
+Validation samples: 9984
+Maximum sequence length: 128
+Training batch size: 8
+Learning rate: 2e-05
+FP16: True
+
+Evaluation results:
+eval_loss: 0.38893911242485046
+eval_accuracy: 0.8525641025641025
+eval_precision: 0.8541582965046204
+eval_recall: 0.8507402961184474
+eval_f1: 0.8524458700882117
+eval_runtime: 19.7939
+eval_samples_per_second: 504.397
+eval_steps_per_second: 63.05
+epoch: 2.0
