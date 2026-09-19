@@ -1,0 +1,783 @@
+EMOTION MODEL V2 - FULL TEST SET EVALUATION
+======================================================================
+
+Model path: C:\Projects\MAJOR PROJECT(JONAS)\models\emotion_model_v2
+Test examples: 2000
+Device: cuda
+
+Emotion labels:
+0: sadness
+1: joy
+2: love
+3: anger
+4: fear
+5: surprise
+
+Overall results:
+Accuracy: 92.8500%
+Precision: 92.8272%
+Recall: 92.8500%
+F1-score: 92.8194%
+
+Per-emotion results:
+
+sadness
+  Precision: 96.7128%
+  Recall: 96.2134%
+  F1-score: 96.4625%
+  Support: 581
+
+joy
+  Precision: 94.7067%
+  Recall: 95.2518%
+  F1-score: 94.9785%
+  Support: 695
+
+love
+  Precision: 85.2349%
+  Recall: 79.8742%
+  F1-score: 82.4675%
+  Support: 159
+
+anger
+  Precision: 91.6058%
+  Recall: 91.2727%
+  F1-score: 91.4390%
+  Support: 275
+
+fear
+  Precision: 87.3950%
+  Recall: 92.8571%
+  F1-score: 90.0433%
+  Support: 224
+
+surprise
+  Precision: 80.6452%
+  Recall: 75.7576%
+  F1-score: 78.1250%
+  Support: 66
+
+Confusion matrix:
+[[559   4   0  10   8   0]
+ [  2 662  22   3   0   6]
+ [  0  30 127   2   0   0]
+ [ 11   3   0 251   9   1]
+ [  3   0   0   8 208   5]
+ [  3   0   0   0  13  50]]
+
+Misclassified examples:
+
+1. i don t feel particularly agitated
+   Actual: fear
+   Predicted: anger
+   Confidence: 76.13%
+
+2. i feel a bit stressed even though all the things i have going on are fun
+   Actual: anger
+   Predicted: sadness
+   Confidence: 72.03%
+
+3. i am right handed however i play billiards left handed naturally so me trying to play right handed feels weird
+   Actual: surprise
+   Predicted: fear
+   Confidence: 74.22%
+
+4. i were to go overseas or cross the border then i become a foreigner and will feel that way but never in my beloved land
+   Actual: love
+   Predicted: joy
+   Confidence: 71.75%
+
+5. when a friend dropped a frog down my neck
+   Actual: anger
+   Predicted: fear
+   Confidence: 86.15%
+
+6. i feel is he generous
+   Actual: love
+   Predicted: joy
+   Confidence: 73.50%
+
+7. i feel very mislead by someone that i really really thought i knew and liked very much so
+   Actual: love
+   Predicted: anger
+   Confidence: 98.57%
+
+8. im feeling generous today heres one more you may have already seen but is good for a chuckle
+   Actual: love
+   Predicted: joy
+   Confidence: 94.79%
+
+9. i actually feel agitated which led to a terrible day yesterday in which i was unable to concentrate on anything and basically piddled the day away
+   Actual: anger
+   Predicted: fear
+   Confidence: 53.69%
+
+10. i was so uncomfortable and feeling weird feelings but wasn t sure if they were contractions since i never really felt contractions with jared until they jacked me up with pitocin
+   Actual: surprise
+   Predicted: fear
+   Confidence: 74.35%
+
+11. i feel blessed to know this family
+   Actual: love
+   Predicted: joy
+   Confidence: 52.79%
+
+12. i really dont like quinn because i feel like she will just end up hurting barney and i hated the lame ted robin storyline
+   Actual: anger
+   Predicted: sadness
+   Confidence: 98.52%
+
+13. i left my garmin on my bike so i was going to have to do this by feel coming out of transition its amazing hearing cheers and your adrenaline is just going crazy
+   Actual: joy
+   Predicted: surprise
+   Confidence: 89.45%
+
+14. i love to dance but often feel inhibited by my own body unsure what i am capable of hyper concerned about other people watching me and having opinions on my style or just feeling awkward as if i have no idea what i am supposed to do here
+   Actual: fear
+   Predicted: sadness
+   Confidence: 73.91%
+
+15. i feel blessed beyond blessed to share my life with you each week
+   Actual: love
+   Predicted: joy
+   Confidence: 65.03%
+
+16. i feel so blessed and honored that we get to be its parents
+   Actual: love
+   Predicted: joy
+   Confidence: 86.51%
+
+17. i just feel are ludicrous and wasting space or so trite they should have looked at the book first and come up with something a little more original
+   Actual: surprise
+   Predicted: sadness
+   Confidence: 72.87%
+
+18. i feel like now its more of sweet apple now
+   Actual: love
+   Predicted: joy
+   Confidence: 67.53%
+
+19. i have a lot going on in my life and feel overwhelmed
+   Actual: fear
+   Predicted: surprise
+   Confidence: 59.87%
+
+20. i took for granted a few weeks ago is really weird and makes me feel really agitated and frustrated
+   Actual: anger
+   Predicted: fear
+   Confidence: 57.42%
+
+21. i will nolonger tell anybody how i feel or what im thinking cause all it seems to do is get me more hated than i already am
+   Actual: sadness
+   Predicted: anger
+   Confidence: 83.36%
+
+22. i indicated then i was feeling quite overwhelmed with work responsibilities teaching traveling and writing
+   Actual: fear
+   Predicted: surprise
+   Confidence: 77.08%
+
+23. i just can t feel accepted
+   Actual: love
+   Predicted: joy
+   Confidence: 82.59%
+
+24. i feel agitated and annoyed more than worried or fearful but these feelings can easily lead to being short tempered with my family and feelings of disharmony
+   Actual: fear
+   Predicted: anger
+   Confidence: 70.08%
+
+25. i could feel his breath on me and smell the sweet scent of him
+   Actual: joy
+   Predicted: love
+   Confidence: 71.12%
+
+26. i loved the feeling i got during an amazing slalom run whether it was in training or in a race
+   Actual: joy
+   Predicted: surprise
+   Confidence: 93.02%
+
+27. i guess feelings aren t meant to be inhibited or prohibited
+   Actual: fear
+   Predicted: sadness
+   Confidence: 59.03%
+
+28. i feel unprotected a class post count link href http reprogramming in process
+   Actual: sadness
+   Predicted: fear
+   Confidence: 99.39%
+
+29. i feel his hand on me to stay faithful
+   Actual: love
+   Predicted: joy
+   Confidence: 58.01%
+
+30. i cant help feeling this way
+   Actual: sadness
+   Predicted: joy
+   Confidence: 93.59%
+
+31. i feel quite helpless in all of this so prayer is the most effective tool i have because i have no answers and there is nothing else i can offer them right now
+   Actual: sadness
+   Predicted: fear
+   Confidence: 88.87%
+
+32. i believe that people should choose the causes they feel passionate about and do what they can and i have no right or desire to push my own charities as more worthy than another
+   Actual: joy
+   Predicted: love
+   Confidence: 58.03%
+
+33. i never feel like im not supporting
+   Actual: joy
+   Predicted: love
+   Confidence: 60.32%
+
+34. when we rearranged furniture in our flat and got stuck in a chair
+   Actual: anger
+   Predicted: fear
+   Confidence: 87.81%
+
+35. i watched the news at the tv
+   Actual: anger
+   Predicted: surprise
+   Confidence: 37.14%
+
+36. i feel i should as a gracious gesture apologizing for my latest post about the osp and the rand license terms
+   Actual: love
+   Predicted: joy
+   Confidence: 74.12%
+
+37. i feel like my sweet company is finally coming together
+   Actual: love
+   Predicted: joy
+   Confidence: 73.09%
+
+38. i feel so blessed to be able to share it with you all
+   Actual: joy
+   Predicted: love
+   Confidence: 56.13%
+
+39. i started feeling a little stressed about leaving on time and making sure we got the getting ready pictures i wanted but everything seemed to workout perfectly
+   Actual: anger
+   Predicted: sadness
+   Confidence: 71.67%
+
+40. i feel so bad about it and hes stood there bewildered
+   Actual: sadness
+   Predicted: fear
+   Confidence: 92.09%
+
+41. i feel not having a generous spirit or a forgiving nature closes me off from accepting gifts from the universe
+   Actual: love
+   Predicted: joy
+   Confidence: 66.31%
+
+42. i feel inside this life is like a game sometimes then you came around me the walls just dissapeared nothing to surround me keep me from my fears im unprotected see how ive opened up youve made me trust coz ive never felt like this before im naked around you does it show
+   Actual: sadness
+   Predicted: fear
+   Confidence: 61.71%
+
+43. i feel so blessed to be married to him because he loves his stepchildren
+   Actual: joy
+   Predicted: love
+   Confidence: 59.08%
+
+44. i feel most passionate about that arouse my emotions seem to be the things i need to learn something about my emotion tells me there is a need to grow in some direction
+   Actual: love
+   Predicted: joy
+   Confidence: 58.68%
+
+45. i met my present boyfriend on a boat trip to england we had said that we would call each other when we got back to sweden we were not going to the same town in england as soon as i walked in he called from england as he could not wait till he came home
+   Actual: joy
+   Predicted: anger
+   Confidence: 66.97%
+
+46. i was playing a sport in an advanced pe class and many of the people were not advanced
+   Actual: anger
+   Predicted: joy
+   Confidence: 94.23%
+
+47. i feel thats just strange on wotcs behalf
+   Actual: surprise
+   Predicted: fear
+   Confidence: 73.00%
+
+48. i feel hated in cempaka
+   Actual: sadness
+   Predicted: anger
+   Confidence: 95.16%
+
+49. told by some people the class leader only choose his friends not true
+   Actual: anger
+   Predicted: joy
+   Confidence: 42.35%
+
+50. i notice how different this question is from why i am feeling so agitated
+   Actual: fear
+   Predicted: anger
+   Confidence: 66.93%
+
+51. getting sent on a company expense trip to another state to work for a week at that plan
+   Actual: joy
+   Predicted: anger
+   Confidence: 65.94%
+
+52. i feel very strongly about supporting charities that help children
+   Actual: joy
+   Predicted: love
+   Confidence: 82.59%
+
+53. i feel totally completely accepted and loved while my heavenly abba was pointing out sin in my life
+   Actual: love
+   Predicted: joy
+   Confidence: 75.58%
+
+54. i feel a strange gratitude for the hated israeli occupation of sinai that lasted from to for actually recognizing the importance of sinais history
+   Actual: surprise
+   Predicted: fear
+   Confidence: 66.70%
+
+55. whenever i put myself in others shoes and try to make the person happy
+   Actual: anger
+   Predicted: joy
+   Confidence: 99.83%
+
+56. i don t know how i feel i guess it s one of those moments where you want to feel like you re accepted even though whatever you did or did not get mattered to you the most
+   Actual: love
+   Predicted: joy
+   Confidence: 50.17%
+
+57. i feel my truth is accepted and not judged because well
+   Actual: love
+   Predicted: joy
+   Confidence: 71.17%
+
+58. i did feel rather like a celebrity and widget stood and let herself be admired while she drank orange squash from my cup
+   Actual: joy
+   Predicted: love
+   Confidence: 87.56%
+
+59. i feel betrayed and angry and sad at the same time dammit
+   Actual: anger
+   Predicted: sadness
+   Confidence: 79.01%
+
+60. i feel like if people accepted that wed get along a lot better
+   Actual: love
+   Predicted: joy
+   Confidence: 76.58%
+
+61. ive been soo excited for him to feel and it was amazing
+   Actual: joy
+   Predicted: surprise
+   Confidence: 86.56%
+
+62. i feel so blessed to have friends i can come to
+   Actual: joy
+   Predicted: love
+   Confidence: 55.64%
+
+63. i have felt the need to write out my sometimes anxious feelings impatient thoughts lists of things that still should could be done before this baby arrives
+   Actual: anger
+   Predicted: fear
+   Confidence: 98.89%
+
+64. i was lying in bed last night after a day of making experiments from the usual suspects fabric plastic and feeling agitated that my issues with proper presentation had not made any headway over the course of a mere six hours
+   Actual: anger
+   Predicted: fear
+   Confidence: 66.67%
+
+65. i feel passionate about knitting and seeing really good films and the surprisingly awesome tv programs that are on now i cant believe i just wrote that
+   Actual: love
+   Predicted: joy
+   Confidence: 87.07%
+
+66. i replied feeling strange at giving the orders
+   Actual: surprise
+   Predicted: fear
+   Confidence: 82.76%
+
+67. i chant the invocation and feel his force supporting me as i teach
+   Actual: joy
+   Predicted: love
+   Confidence: 56.57%
+
+68. i started walking again yesterday and it feels amazing
+   Actual: joy
+   Predicted: surprise
+   Confidence: 94.03%
+
+69. im feeling too tortured to write today
+   Actual: fear
+   Predicted: anger
+   Confidence: 63.86%
+
+70. i feel blessed that i have people in my life who remind me all the time that i did the right thing and that i look better like this
+   Actual: love
+   Predicted: joy
+   Confidence: 50.08%
+
+71. im not sure if its just me who feels this way or if its everyone but tortured souls dont make for the best boyfriends
+   Actual: anger
+   Predicted: fear
+   Confidence: 88.64%
+
+72. i have not conducted a survey but it is quite likely that many of them feel as assaulted by onel s demons and other creators as i would have felt had the walls been covered only with eminent figures patriotic heroes and epic deeds
+   Actual: sadness
+   Predicted: fear
+   Confidence: 98.82%
+
+73. i always feel so helpless during times of disaster but i feel a little better knowing that even a few dollars can make a difference for someone in need
+   Actual: sadness
+   Predicted: fear
+   Confidence: 53.00%
+
+74. i wonder if the homeowners would feel weird if i parked to gape at their landscaping
+   Actual: surprise
+   Predicted: fear
+   Confidence: 75.78%
+
+75. i feel shame in a strange way
+   Actual: surprise
+   Predicted: fear
+   Confidence: 62.87%
+
+76. i feel for all of you who have been supporting me is so extreme there would be no way to put a number value on it
+   Actual: joy
+   Predicted: love
+   Confidence: 83.00%
+
+77. i reread for comfort the familiarity of a book whose plot i already know is easier to deal with when im feeling stressed than a new to me book with all its unknowns
+   Actual: sadness
+   Predicted: anger
+   Confidence: 75.01%
+
+78. i feel affirmed gracious sensuous and will have less self doubt when a href http generations
+   Actual: love
+   Predicted: joy
+   Confidence: 96.60%
+
+79. i feel so greedy so needy so helpless
+   Actual: anger
+   Predicted: sadness
+   Confidence: 80.93%
+
+80. when i heard the last regulation of the socialist govrenment concerning pensions
+   Actual: sadness
+   Predicted: anger
+   Confidence: 74.14%
+
+81. i feel accepted because of my condition
+   Actual: love
+   Predicted: joy
+   Confidence: 80.51%
+
+82. i felt confused me sometimes that makes me feel useless
+   Actual: sadness
+   Predicted: fear
+   Confidence: 99.05%
+
+83. i noticed that i was feeling very stressed and anxious and i just couldnt quite put my finger on why
+   Actual: anger
+   Predicted: sadness
+   Confidence: 73.81%
+
+84. ive come to feel about a supporting character in one of my all time favorite films giant
+   Actual: joy
+   Predicted: love
+   Confidence: 94.06%
+
+85. i stay the more distanced from others i feel it is strange because i sometimes feel like a new friendship is growing or forming
+   Actual: surprise
+   Predicted: fear
+   Confidence: 76.19%
+
+86. i don t feel betrayed coz the backstabber had no grounds for their accusation but i m just amazed at some people s ability to do such things
+   Actual: surprise
+   Predicted: sadness
+   Confidence: 92.63%
+
+87. i first started reading city of dark magic i thought it would be a challenge to actually enjoy it since i felt like the content about famous classical music was over my head but luckily after plowing through the first chapter i became more confident and started feeling less dumb
+   Actual: sadness
+   Predicted: joy
+   Confidence: 96.79%
+
+88. i feel very saddened that the king whom i once quite respected as far as monarchs go was ineffectual at best
+   Actual: joy
+   Predicted: sadness
+   Confidence: 99.65%
+
+89. i feel this strange sort of liberation
+   Actual: surprise
+   Predicted: fear
+   Confidence: 70.73%
+
+90. i feel so weird and scattered with all wonders about a million different things
+   Actual: surprise
+   Predicted: fear
+   Confidence: 76.40%
+
+91. im always feeling so agitated overly excited and impatient to those who are close to me
+   Actual: anger
+   Predicted: fear
+   Confidence: 73.58%
+
+92. i that it feels like she is being tortured
+   Actual: fear
+   Predicted: anger
+   Confidence: 85.74%
+
+93. ive blogged and i feel strange about it
+   Actual: surprise
+   Predicted: fear
+   Confidence: 87.44%
+
+94. i started to feel so overwhelmed
+   Actual: fear
+   Predicted: surprise
+   Confidence: 78.20%
+
+95. i don t really know the oldest one very well and his mothering mother seems to feel that he is not sweet
+   Actual: joy
+   Predicted: love
+   Confidence: 75.30%
+
+96. i know she shes the only one who provides income to my family right now but it feels like shes putting it up in our face that shes supporting us
+   Actual: joy
+   Predicted: love
+   Confidence: 85.04%
+
+97. i walked to school he felt the bounce in his step the overjoyed feelings of youth and the thrill of excitement of coming to school and meeting his beloved friends
+   Actual: love
+   Predicted: joy
+   Confidence: 99.50%
+
+98. i was like should i feel sweet or feel offended
+   Actual: love
+   Predicted: anger
+   Confidence: 99.62%
+
+99. i cannot even begin to express in words the depth of sorrow that i feel having not posted any of my ludicrous rants over the passed days
+   Actual: surprise
+   Predicted: sadness
+   Confidence: 98.28%
+
+100. this monday i took a math bs test and flunked for the second time
+   Actual: sadness
+   Predicted: anger
+   Confidence: 40.54%
+
+101. i guess its because i feel like if im too passionate about something it will get taken away from me
+   Actual: love
+   Predicted: joy
+   Confidence: 52.31%
+
+102. i just keep on feeling blessed
+   Actual: love
+   Predicted: joy
+   Confidence: 60.29%
+
+103. i felt a stronger wish to be free from self cherishing through my refuge practice and a return to the feeling of freedom and protection from suffering which i stayed with for the rest of the meditation
+   Actual: sadness
+   Predicted: joy
+   Confidence: 98.69%
+
+104. i seek out pain to feel tortured just to feel something
+   Actual: fear
+   Predicted: anger
+   Confidence: 80.73%
+
+105. i decide that picking the easy route would get me nowhere and i feel like other people want me tortured so i follow the blue path
+   Actual: fear
+   Predicted: anger
+   Confidence: 91.04%
+
+106. i could have expected in every way and i was feeling a bit overwhelmed at that point how quickly life changed in the past weeks
+   Actual: fear
+   Predicted: surprise
+   Confidence: 77.70%
+
+107. i actually was in a meeting last week where someone yelled at an older lady because her phone rang i felt terrible for her your boss treats you unfairly or in this case someone makes you feel you are not worth anything is only allowing those who offended to steal your joy
+   Actual: anger
+   Predicted: sadness
+   Confidence: 99.01%
+
+108. i like the fresh feeling of sweet he gave me
+   Actual: joy
+   Predicted: love
+   Confidence: 66.15%
+
+109. i feel helpless to regain a safe feeling
+   Actual: sadness
+   Predicted: fear
+   Confidence: 88.35%
+
+110. i firmly believe that the only way to go about this craft is to write the book that you feel passionate about and not to worry about finding the book that the mass audience desires
+   Actual: joy
+   Predicted: love
+   Confidence: 65.08%
+
+111. i have strong feelings about being faithful
+   Actual: love
+   Predicted: joy
+   Confidence: 69.51%
+
+112. i felt it had a slight bitterness in the finish that detracted from its oily mouthfeel and sweet entry
+   Actual: joy
+   Predicted: love
+   Confidence: 86.97%
+
+113. i woke up and felt sad all over again but that was quickly replaced with a feeling that reassured me things will work themselves out on their own time
+   Actual: joy
+   Predicted: sadness
+   Confidence: 85.99%
+
+114. i needed some space i needed to grow i was in the midst of some serious change and ok yes they had also hurt my feelings pretty badly and i was a bit spiteful
+   Actual: anger
+   Predicted: sadness
+   Confidence: 70.85%
+
+115. i feel very cheated since i am supporting the family and doing all the other stuff while he spends hours a day gaming
+   Actual: joy
+   Predicted: love
+   Confidence: 83.91%
+
+116. i feel i can only hope im not alone in these thoughts and im sure to all you fellow exchange students you probably have the same thoughts in mind with at least some of this listed some might say being an exchange student is unlike any other experience
+   Actual: sadness
+   Predicted: joy
+   Confidence: 58.30%
+
+117. i feel like that im hated by most of the girls is it becoz im a good dancer
+   Actual: sadness
+   Predicted: anger
+   Confidence: 73.15%
+
+118. i feel like living in austin was really sweet in other ways
+   Actual: love
+   Predicted: joy
+   Confidence: 51.06%
+
+119. i get the impression that banjo was really feeling it but molly still prefers her beloved katy perry purrrr
+   Actual: love
+   Predicted: joy
+   Confidence: 79.78%
+
+120. i also do feel passionate about teaching
+   Actual: love
+   Predicted: joy
+   Confidence: 79.93%
+
+121. i felt like id developed feelings for this guy thus explaining why id even follow this guy like a faithful puppy dog and he never knew
+   Actual: joy
+   Predicted: love
+   Confidence: 72.12%
+
+122. i was stressed about my job search and apartment hunting and i was just feeling overwhelmed with everything that was going on
+   Actual: fear
+   Predicted: surprise
+   Confidence: 76.51%
+
+123. i didnt want to be spending my days working in a job that i didnt enjoy or to come home feeling stressed and tired and not be able to give my daughter the attention she deserved
+   Actual: anger
+   Predicted: sadness
+   Confidence: 57.19%
+
+124. i have this grave feeling it will not be back until tomorrow and strangely enough i have accepted it
+   Actual: joy
+   Predicted: love
+   Confidence: 79.81%
+
+125. when i learnt that my best friend had failed the exams
+   Actual: anger
+   Predicted: sadness
+   Confidence: 46.68%
+
+126. i don t care if any of you read this but this is just what i feel when i m around you guys i feel hated
+   Actual: sadness
+   Predicted: anger
+   Confidence: 69.21%
+
+127. i also know that if today i refuse to hate jews or anybody else it is because i know how it feels to be hated
+   Actual: sadness
+   Predicted: anger
+   Confidence: 83.80%
+
+128. i hate these feelings in my heart i hate that work stressed me out i hate that cornelius wont let me get my way im frustrated lord
+   Actual: sadness
+   Predicted: anger
+   Confidence: 86.11%
+
+129. i feel so amazing musicjuzz
+   Actual: joy
+   Predicted: surprise
+   Confidence: 84.85%
+
+130. i felt apprehensive in regards to the party oftentimes in the past other men have made me feel resentful towards them when i attended with them
+   Actual: anger
+   Predicted: fear
+   Confidence: 99.00%
+
+131. i feel your frustration but it s time to calm the hell down
+   Actual: joy
+   Predicted: anger
+   Confidence: 97.21%
+
+132. i need a break or im feeling stressed out
+   Actual: anger
+   Predicted: sadness
+   Confidence: 86.05%
+
+133. i feel like some of you have pains and you cannot imagine becoming passionate about the group or the idea that is causing pain
+   Actual: joy
+   Predicted: love
+   Confidence: 61.97%
+
+134. i am not sure how i feel i think because i felt like i already knew i have already sort of accepted it
+   Actual: joy
+   Predicted: love
+   Confidence: 53.91%
+
+135. ive got a off sale the ad says starting tomorrow but im feeling generous and started it now
+   Actual: love
+   Predicted: joy
+   Confidence: 91.85%
+
+136. im ok with that it feels a little weird
+   Actual: surprise
+   Predicted: fear
+   Confidence: 72.29%
+
+137. i am still feeling a tad strange in those pearly whites
+   Actual: surprise
+   Predicted: fear
+   Confidence: 79.93%
+
+138. i feel inside cause life is like a game sometimes but then you came around me the walls just disappeared nothing to surround me and keep me from my fears im unprotected see how ive opened up youve made me trust
+   Actual: fear
+   Predicted: sadness
+   Confidence: 99.48%
+
+139. ive started feeling like almost nothing is worth getting agitated about
+   Actual: fear
+   Predicted: anger
+   Confidence: 59.92%
+
+140. im polyamorous something im starting to feel truly accepted for being
+   Actual: love
+   Predicted: joy
+   Confidence: 68.66%
+
+141. i didn t mean to get angry with you bommie i just can t control my feelings hellip i just hated myself why i am like this the dara who can t get over with that b
+   Actual: sadness
+   Predicted: anger
+   Confidence: 83.49%
+
+142. i was gaining weight getting a lot stronger and feeling amazing
+   Actual: joy
+   Predicted: surprise
+   Confidence: 74.68%
+
+143. i check you when you re sleeping feel your nose and toes to be sure you aren t too hot or cold
+   Actual: joy
+   Predicted: love
+   Confidence: 91.39%
