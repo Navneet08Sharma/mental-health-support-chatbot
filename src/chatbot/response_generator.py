@@ -1,23 +1,3 @@
-"""
-AI Response Generator
-
-Hybrid response generation system.
-
-Primary:
-    Gemini API
-
-Fallback:
-    Local generic conversational response
-
-Responsibilities:
-    1. Generate natural responses using Gemini.
-    2. Provide conversation context.
-    3. Use detected emotion as additional context.
-    4. Gracefully handle Gemini quota/API failures.
-    5. Handle temporary Gemini server errors.
-    6. Provide a generic fallback for arbitrary messages.
-"""
-
 import os
 import time
 
@@ -26,31 +6,35 @@ from google import genai
 from google.genai import types
 
 
-# ============================================================
-# LOAD ENVIRONMENT VARIABLES
-# ============================================================
-
-load_dotenv()
-
-
-# ============================================================
-# RESPONSE GENERATOR
-# ============================================================
-
 class ResponseGenerator:
+    """
+    Generates supportive chatbot responses using Gemini.
+
+    The class receives:
+        - user's message
+        - detected emotion
+        - recent conversation history
+
+    It sends the combined context to Gemini and returns
+    a natural conversational response.
+
+    If Gemini is temporarily unavailable, the class can
+    retry the request and eventually fall back to a
+    local response.
+    """
 
     def __init__(self):
+        # ----------------------------------------------------
+        # Load environment variables
+        # ----------------------------------------------------
 
-        # ----------------------------------------------------
-        # Load Gemini API key
-        # ----------------------------------------------------
+        load_dotenv()
 
         api_key = os.getenv("GEMINI_API_KEY")
 
         if not api_key:
             raise ValueError(
-                "GEMINI_API_KEY not found. "
-                "Please add GEMINI_API_KEY to the .env file."
+                "GEMINI_API_KEY not found in environment variables."
             )
 
         # ----------------------------------------------------
@@ -58,30 +42,28 @@ class ResponseGenerator:
         # ----------------------------------------------------
 
         self.client = genai.Client(
-            api_key=api_key,
-            http_options=types.HttpOptions(
-                timeout=15000
-            )
+            api_key=api_key
         )
 
         # ----------------------------------------------------
         # Gemini model
         # ----------------------------------------------------
 
-        self.model = "gemini-3.6-flash"
+        self.model = "gemini-3.8-flash"
 
         # ----------------------------------------------------
-        # Request settings
+        # Retry configuration
         # ----------------------------------------------------
 
         self.max_retries = 1
+        self.last_response_source = "LOCAL FALLBACK"
 
         print(
             "Gemini response generator loaded successfully."
         )
 
     # ========================================================
-    # GENERATE RESPONSE
+    # MAIN RESPONSE METHOD
     # ========================================================
 
     def generate_response(
@@ -91,119 +73,82 @@ class ResponseGenerator:
         history=None
     ):
         """
-        Generate a response to the user's message.
+        Generate a chatbot response.
 
-        Gemini is the primary response generator.
+        Parameters
+        ----------
+        message : str
+            Latest user message.
 
-        If Gemini is unavailable, rate-limited, or returns
-        a server error, a local fallback is used so that
-        the chatbot can continue operating.
+        emotion : str
+            Emotion detected by the local emotion model.
+
+        history : list
+            Previous conversation turns.
+
+        Returns
+        -------
+        str
+            Generated or fallback response.
         """
-
-        # ----------------------------------------------------
-        # Validate message
-        # ----------------------------------------------------
-
-        if not isinstance(message, str):
-            raise TypeError(
-                "message must be a string"
-            )
-
-        # ----------------------------------------------------
-        # Validate emotion
-        # ----------------------------------------------------
-
-        if not isinstance(emotion, str):
-            raise TypeError(
-                "emotion must be a string"
-            )
-
-        message = message.strip()
-        emotion = emotion.strip().lower()
-
-        if not message:
-            raise ValueError(
-                "message cannot be empty"
-            )
-
-        if not emotion:
-            raise ValueError(
-                "emotion cannot be empty"
-            )
-
-        # ----------------------------------------------------
-        # History
-        # ----------------------------------------------------
 
         if history is None:
             history = []
 
-        # ====================================================
-        # TRY GEMINI
-        # ====================================================
-
         try:
-
-            response = self._generate_with_gemini(
-                message=message,
-                emotion=emotion,
-                history=history
+            return self._generate_with_gemini(
+                message,
+                emotion,
+                history
             )
-
-            if response is None:
-                raise ValueError(
-                    "Gemini returned no response."
-                )
-
-            response = response.strip()
-
-            if not response:
-                raise ValueError(
-                    "Gemini returned an empty response."
-                )
-
-            return response
-
-        # ====================================================
-        # GEMINI FAILED
-        # ====================================================
 
         except Exception as error:
 
-            print(
-                "\n[Gemini] Response generation unavailable."
-            )
+            # ------------------------------------------------
+            # Quota errors
+            # ------------------------------------------------
 
             if self._is_quota_error(error):
 
                 print(
-                    "[Gemini] API quota/rate limit reached."
+                    "[Gemini] API quota exceeded."
                 )
 
-            elif self._is_temporary_error(error):
+                return self._fallback_response(
+                    message,
+                    emotion
+                )
+
+            # ------------------------------------------------
+            # Temporary server errors
+            # ------------------------------------------------
+
+            if self._is_temporary_error(error):
 
                 print(
-                    "[Gemini] Gemini service is temporarily "
-                    "unavailable."
+                    "[Gemini] Temporary Gemini service error."
                 )
 
-            else:
-
-                print(
-                    f"[Gemini] API error: {error}"
+                return self._fallback_response(
+                    message,
+                    emotion
                 )
+
+            # ------------------------------------------------
+            # Other Gemini errors
+            # ------------------------------------------------
 
             print(
-                "[Gemini] Using local fallback response."
+                f"[Gemini] Error: {error}"
             )
 
             return self._fallback_response(
-                message=message,
-                emotion=emotion
+                message,
+                emotion
             )
 
     # ========================================================
-    # GEMINI RESPONSE
+    # GEMINI GENERATION
     # ========================================================
 
     def _generate_with_gemini(
@@ -217,6 +162,10 @@ class ResponseGenerator:
 
         Manual conversation history is used so that the
         chatbot controls exactly how much context is sent.
+
+        The request intentionally does not use
+        GenerateContentConfig because direct requests
+        have been more reliable in the current API setup.
         """
 
         # ----------------------------------------------------
@@ -224,42 +173,19 @@ class ResponseGenerator:
         # ----------------------------------------------------
 
         system_prompt = """
-You are an empathetic AI chatbot.
+You are an empathetic AI mental-health support chatbot.
 
-Your job is to respond naturally and appropriately
-to the user's latest message while maintaining
-conversation continuity.
+Respond naturally and conversationally to the user's latest message.
 
-A local emotion classifier provides a detected emotion.
-Use it as additional context, but do not assume that
-the classifier is always correct.
+Use previous conversation context when relevant.
+Use the detected emotion as additional context, but do not assume it is always correct.
 
-IMPORTANT:
-
-The user's latest message is the most important part
-of the conversation.
-
-Understand what the user is actually saying before
-responding.
-
-Rules:
-
-- Respond directly to the latest user message.
-- Maintain continuity with previous messages when relevant.
-- Be natural and conversational.
-- Be empathetic when appropriate.
-- Do not sound robotic.
-- Do not repeatedly mention the detected emotion.
-- Do not blindly follow the detected emotion if the
-  user's actual message suggests something else.
-- Keep responses reasonably concise.
-- Ask a follow-up question when it naturally helps
-  continue the conversation.
-- Do not ask unnecessary questions.
-- Do not claim to be human.
-- If the user is distressed, respond supportively.
-- Do not invent facts about the user.
-- Do not repeat the entire conversation.
+Be supportive when the user is distressed.
+Do not sound robotic.
+Do not claim to be human.
+Do not invent facts about the user.
+Keep responses reasonably concise.
+Ask a follow-up question only when it naturally helps.
 """
 
         # ====================================================
@@ -299,6 +225,8 @@ Rules:
         # ====================================================
 
         user_prompt = f"""
+{system_prompt}
+
 {history_text}
 
 Latest user message:
@@ -317,37 +245,35 @@ emotion-classification system.
 """
 
         # ====================================================
-        # GEMINI CONFIGURATION
-        # ====================================================
-        config = types.GenerateContentConfig(
-             system_instruction=system_prompt,
-
-             temperature=0.7,
-
-             max_output_tokens=300,
-
-            automatic_function_calling=types.AutomaticFunctionCallingConfig(
-                disable=True
-            ),
-        )
-
-        # ====================================================
         # GEMINI REQUEST
         # ====================================================
 
         last_error = None
 
-        for attempt in range(self.max_retries + 1):
+        for attempt in range(
+            self.max_retries + 1
+        ):
 
             try:
 
-                response = self.client.models.generate_content(
-                    model=self.model,
-                    contents=user_prompt,
-                    config=config
+                response = (
+                    self.client.models.generate_content(
+                        model=self.model,
+                        contents=user_prompt
+                    )
                 )
 
-                return response.text
+                # ------------------------------------------------
+                # Make sure Gemini actually returned text
+                # ------------------------------------------------
+
+                if response.text:
+
+                    return response.text.strip()
+
+                raise ValueError(
+                    "Gemini returned an empty response."
+                )
 
             except Exception as error:
 
@@ -358,6 +284,7 @@ emotion-classification system.
                 # --------------------------------------------
 
                 if self._is_quota_error(error):
+
                     raise
 
                 # --------------------------------------------
@@ -380,6 +307,8 @@ emotion-classification system.
 
                         continue
 
+                    # Let generate_response() handle the
+                    # final temporary failure gracefully.
                     raise
 
                 # --------------------------------------------
@@ -389,6 +318,7 @@ emotion-classification system.
                 raise
 
         if last_error:
+
             raise last_error
 
         raise ValueError(
@@ -396,62 +326,66 @@ emotion-classification system.
         )
 
     # ========================================================
-    # DETECT QUOTA / RATE LIMIT ERROR
+    # ERROR DETECTION
     # ========================================================
 
-    def _is_quota_error(self, error):
+    def _is_quota_error(
+        self,
+        error
+    ):
         """
-        Determine whether the Gemini exception appears
-        to be caused by quota or rate limiting.
+        Detect Gemini quota/rate-limit errors.
         """
 
         error_text = str(error).lower()
 
-        quota_keywords = [
+        quota_indicators = [
             "429",
             "resource_exhausted",
-            "quota",
+            "quota exceeded",
+            "quota_exceeded",
             "rate limit",
-            "rate_limit",
-            "too many requests",
+            "too_many_requests"
         ]
 
         return any(
-            keyword in error_text
-            for keyword in quota_keywords
+            indicator in error_text
+            for indicator in quota_indicators
         )
 
     # ========================================================
-    # DETECT TEMPORARY SERVER ERROR
-    # ========================================================
 
-    def _is_temporary_error(self, error):
+    def _is_temporary_error(
+        self,
+        error
+    ):
         """
-        Determine whether the Gemini exception appears
-        to be a temporary server/service problem.
+        Detect temporary Gemini/server errors.
         """
 
         error_text = str(error).lower()
 
-        temporary_keywords = [
+        temporary_indicators = [
             "503",
             "unavailable",
             "service unavailable",
             "high demand",
             "temporarily unavailable",
-            "internal server error",
             "500",
+            "internal server error",
             "502",
+            "bad gateway",
             "504",
+            "gateway timeout"
         ]
 
         return any(
-            keyword in error_text
-            for keyword in temporary_keywords
+            indicator in error_text
+            for indicator in temporary_indicators
         )
 
     # ========================================================
-    # GENERIC LOCAL FALLBACK
+    # FALLBACK RESPONSE
     # ========================================================
 
     def _fallback_response(
@@ -460,141 +394,129 @@ emotion-classification system.
         emotion
     ):
         """
-        Generate a generic local response.
-
-        This intentionally does not try to understand every
-        possible topic with keyword rules.
+        Generate a local fallback response when Gemini
+        cannot be reached.
         """
 
         message_lower = message.lower().strip()
 
-        # ====================================================
-        # SIMPLE GREETINGS
-        # ====================================================
+        # ----------------------------------------------------
+        # Greetings
+        # ----------------------------------------------------
 
-        greeting_words = [
+        greetings = [
             "hi",
             "hello",
             "hey",
             "good morning",
             "good afternoon",
-            "good evening",
+            "good evening"
         ]
 
-        if any(
-            message_lower == greeting
-            or message_lower.startswith(
-                greeting + " "
-            )
-            for greeting in greeting_words
-        ):            
+        if message_lower in greetings:
 
             return (
                 "Hi! It's nice to hear from you. "
-                "How are you doing today?"
-            )
-
-        # ====================================================
-        # HOW ARE YOU
-        # ====================================================
-
-        if (
-            "how are you" in message_lower
-            or "how are u" in message_lower
-        ):
-
-            return (
-                "I'm doing well, thanks for asking! "
                 "How are you feeling today?"
             )
 
-        # ====================================================
-        # THANK YOU
-        # ====================================================
+        # ----------------------------------------------------
+        # Goodbye
+        # ----------------------------------------------------
 
-        if (
-            "thank you" in message_lower
-            or "thanks" in message_lower
-        ):
+        goodbye_messages = [
+            "goodbye",
+            "bye",
+            "bye bye",
+            "see you",
+            "talk to you later"
+        ]
 
-            return (
-                "You're very welcome! "
-                "I'm glad I could help."
-            )
-
-        # ====================================================
-        # GOODBYE
-        # ====================================================
-
-        if any(
-            phrase in message_lower
-            for phrase in [
-                "goodbye",
-                "see you",
-                "talk to you later",
-            ]
-        ):
+        if message_lower in goodbye_messages:
 
             return (
-                "Take care! "
-                "I'll be here whenever you'd like "
-                "to talk again."
+                "Take care. I'm glad you stopped by. "
+                "You can always come back if you'd like to talk."
             )
 
-        # ====================================================
-        # EMOTION-AWARE GENERIC FALLBACK
-        # ====================================================
+        # ----------------------------------------------------
+        # Sadness
+        # ----------------------------------------------------
 
         if emotion == "sadness":
 
             return (
-                "I'm sorry you're going through this. "
-                "If you'd like, you can tell me more about "
-                "what's on your mind."
+                "I'm sorry you're having a difficult time. "
+                "You don't have to figure everything out at once. "
+                "If you'd like, you can tell me what's been "
+                "on your mind."
             )
+
+        # ----------------------------------------------------
+        # Anger
+        # ----------------------------------------------------
 
         if emotion == "anger":
 
             return (
-                "It sounds like something is bothering you. "
-                "If you'd like, tell me more about what happened."
+                "It sounds like something has really frustrated "
+                "you. If you want, you can tell me what happened "
+                "and we can talk through it."
             )
+
+        # ----------------------------------------------------
+        # Fear
+        # ----------------------------------------------------
 
         if emotion == "fear":
 
             return (
-                "It sounds like something may be worrying you. "
-                "I'm here to listen if you'd like to talk about it."
+                "It sounds like something is worrying you. "
+                "Take a moment to breathe, and if you feel "
+                "comfortable, tell me what's making you feel this way."
             )
 
-        if emotion == "joy":
-
-            return (
-                "That sounds good! "
-                "I'd love to hear more about what's happening."
-            )
-
-        if emotion == "love":
-
-            return (
-                "That sounds meaningful. "
-                "Tell me more about it if you'd like."
-            )
+        # ----------------------------------------------------
+        # Surprise
+        # ----------------------------------------------------
 
         if emotion == "surprise":
 
             return (
-                "That sounds unexpected! "
-                "I'd be interested to hear more about what happened."
+                "That sounds like it caught you off guard. "
+                "What happened?"
             )
 
-        # ====================================================
-        # UNIVERSAL FALLBACK
-        # ====================================================
+        # ----------------------------------------------------
+        # Love
+        # ----------------------------------------------------
+
+        if emotion == "love":
+
+            return (
+                "That sounds meaningful to you. "
+                "I'd be happy to hear more about it."
+            )
+
+        # ----------------------------------------------------
+        # Joy
+        # ----------------------------------------------------
+
+        if emotion == "joy":
+
+            return (
+                "That sounds wonderful! "
+                "I'm glad something is making you feel good. "
+                "Tell me more about it."
+            )
+
+        # ----------------------------------------------------
+        # Neutral/general fallback
+        # ----------------------------------------------------
 
         return (
-            "That sounds interesting. "
-            "Tell me more about what's going on."
+            "I'm here to listen. "
+            "Tell me a little more about what's on your mind."
         )
 
 
@@ -604,111 +526,14 @@ emotion-classification system.
 
 if __name__ == "__main__":
 
-    print("\n")
-    print("=" * 60)
-    print("RESPONSE GENERATOR TEST")
-    print("=" * 60)
+    generator = ResponseGenerator()
 
-    try:
+    response = generator.generate_response(
+        message="I am feeling a little tired today.",
+        emotion="sadness",
+        history=[]
+    )
 
-        generator = ResponseGenerator()
-
-        test_messages = [
-
-            (
-                "I finally achieved my goal!",
-                "joy"
-            ),
-
-            (
-                "I am at the science museum.",
-                "joy"
-            ),
-
-            (
-                "I bought a new phone yesterday.",
-                "surprise"
-            ),
-
-            (
-                "I am studying physics.",
-                "joy"
-            ),
-
-            (
-                "I feel completely alone.",
-                "sadness"
-            ),
-
-            (
-                "hi how are you?",
-                "joy"
-            ),
-
-        ]
-
-        history = []
-
-        for number, (
-            message,
-            emotion
-        ) in enumerate(
-            test_messages,
-            start=1
-        ):
-
-            print(
-                "\n" + "-" * 60
-            )
-
-            print(
-                f"Test {number}"
-            )
-
-            print(
-                f"User: {message}"
-            )
-
-            print(
-                f"Emotion: {emotion.upper()}"
-            )
-
-            response = generator.generate_response(
-                message=message,
-                emotion=emotion,
-                history=history
-            )
-
-            print(
-                f"\nResponse:\n{response}"
-            )
-
-            history.append({
-                "user": message,
-                "emotion": emotion,
-                "assistant": response,
-            })
-
-        print(
-            "\n" + "=" * 60
-        )
-
-        print(
-            "RESPONSE GENERATOR TEST COMPLETE"
-        )
-
-        print(
-            "=" * 60
-        )
-
-    except KeyboardInterrupt:
-
-        print(
-            "\n\nTest interrupted by user."
-        )
-
-    except Exception as error:
-
-        print(
-            f"\nError: {error}"
-        )
+    print()
+    print("Chatbot:")
+    print(response)

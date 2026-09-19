@@ -1,54 +1,23 @@
-"""
-Conversation Layer
-
-Connects:
-
-User Message
-    ↓
-V2 Emotion Analyzer
-    ↓
-Detected Emotion
-    ↓
-Gemini Response Generator
-    ↓
-Context-Aware Response
-    ↓
-Conversation History
-
-If Gemini is unavailable:
-    ↓
-Graceful fallback response
-    ↓
-Local emotion detection continues working
-"""
-
 from pathlib import Path
 import sys
 
 
-# ============================================================
-# PROJECT PATH
-# ============================================================
-
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-
 SRC_PATH = PROJECT_ROOT / "src"
 
 if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
 
 
-# ============================================================
-# IMPORTS
-# ============================================================
-
 from emotion.predict_emotion import EmotionAnalyzer
+from chatbot.intent_detector import IntentDetector
 from chatbot.response_generator import ResponseGenerator
+from src.wellness.breathing import BreathingExercise
+from src.wellness.yoga import YogaWellness
+from src.wellness.meditation import MeditationWellness
+from src.safety.safety_detector import SafetyDetector
+from src.safety.safety_response import SafetyResponse
 
-
-# ============================================================
-# CONVERSATION MANAGER
-# ============================================================
 
 class ConversationManager:
 
@@ -58,30 +27,21 @@ class ConversationManager:
         print("INITIALIZING CONVERSATION MANAGER")
         print("=" * 60)
 
-        # ----------------------------------------------------
-        # Emotion Analysis
-        # ----------------------------------------------------
-
         print("\nLoading emotion analysis system...")
-
         self.emotion_analyzer = EmotionAnalyzer()
 
-
-        # ----------------------------------------------------
-        # Gemini Response Generator
-        # ----------------------------------------------------
+        print("\nLoading intent detection system...")
+        self.intent_detector = IntentDetector()
+        self.breathing_exercise = BreathingExercise()
+        self.yoga_wellness = YogaWellness()
+        self.meditation_wellness = MeditationWellness()
+        self.safety_detector = SafetyDetector()
+        self.safety_response = SafetyResponse()
 
         print("\nLoading Gemini response generator...")
-
         self.response_generator = ResponseGenerator()
 
-
-        # ----------------------------------------------------
-        # Conversation History
-        # ----------------------------------------------------
-
         self.history = []
-
 
         print("\nConversation manager ready.")
 
@@ -93,61 +53,95 @@ class ConversationManager:
     def _fallback_response(
         self,
         message,
+        intent,
         emotion,
         confidence
     ):
-        """
-        Generate a context-aware local response when Gemini
-        is unavailable.
-
-        The fallback does NOT blindly trust the emotion model.
-
-        It first checks:
-            1. Greetings
-            2. Common conversational questions
-            3. Low-confidence emotion predictions
-            4. High-confidence emotions
-
-        This allows the chatbot to remain usable even when
-        Gemini API quota is exhausted.
-        """
-
-        # ----------------------------------------------------
-        # Clean message
-        # ----------------------------------------------------
 
         message_lower = message.lower().strip()
 
 
-        # ====================================================
-        # GREETINGS
-        # ====================================================
+        # ----------------------------------------------------
+        # SPECIFIC FEATURE INTENTS
+        # ----------------------------------------------------
 
-        greeting_words = [
-            "hi",
-            "hello",
-            "hey",
-            "good morning",
-            "good afternoon",
-            "good evening",
-        ]
+        if intent == "breathing":
+            return self.breathing_exercise.format_exercise()
+
+            
+
+            
 
 
-        if any(
-            message_lower == greeting
-            or message_lower.startswith(greeting + " ")
-            for greeting in greeting_words
-        ):
+        if intent == "yoga":
+            return self.yoga_wellness.format_session()
+
+            
+
+
+        if intent == "meditation":
+            return self.meditation_wellness.format_session()
+
+            
+
+            
+
+
+        if intent == "study_help":
 
             return (
-                "Hi! I'm doing well. How are you? "
+                "Let's make studying manageable. "
+                "Choose one small topic and focus on it for "
+                "25 minutes, then take a short break. "
+                "You can repeat the cycle if it works for you."
+            )
+
+
+        if intent == "journaling":
+
+            return (
+                "You could start with a simple prompt: "
+                "'What am I feeling right now, and what might "
+                "be contributing to it?' Write whatever comes "
+                "to mind without worrying about making it perfect."
+            )
+
+
+        if intent == "casual_conversation":
+
+            return (
+                "Of course. I'm here to chat. "
+                "What's on your mind?"
+            )
+
+
+        # ----------------------------------------------------
+        # GREETING
+        # ----------------------------------------------------
+
+        if intent == "greeting":
+
+            return (
+                "Hi! How are you feeling today? "
                 "What would you like to talk about?"
             )
 
 
-        # ====================================================
-        # HOW ARE YOU QUESTIONS
-        # ====================================================
+        # ----------------------------------------------------
+        # GOODBYE
+        # ----------------------------------------------------
+
+        if intent == "goodbye":
+
+            return (
+                "Take care! I'll be here whenever "
+                "you'd like to talk again."
+            )
+
+
+        # ----------------------------------------------------
+        # HOW ARE YOU
+        # ----------------------------------------------------
 
         if (
             "how are you" in message_lower
@@ -160,9 +154,9 @@ class ConversationManager:
             )
 
 
-        # ====================================================
+        # ----------------------------------------------------
         # THANK YOU
-        # ====================================================
+        # ----------------------------------------------------
 
         if (
             "thank you" in message_lower
@@ -175,32 +169,9 @@ class ConversationManager:
             )
 
 
-        # ====================================================
-        # GOODBYE
-        # ====================================================
-
-        if any(
-            phrase in message_lower
-            for phrase in [
-                "goodbye",
-                "bye",
-                "see you",
-                "talk to you later",
-            ]
-        ):
-
-            return (
-                "Take care! "
-                "I'll be here whenever you'd like to talk again."
-            )
-
-
-        # ====================================================
+        # ----------------------------------------------------
         # LOW CONFIDENCE
-        # ====================================================
-
-        # If the emotion classifier is uncertain, do not let
-        # the emotion determine the response.
+        # ----------------------------------------------------
 
         if confidence < 0.60:
 
@@ -210,62 +181,49 @@ class ConversationManager:
             )
 
 
-        # ====================================================
-        # HIGH-CONFIDENCE EMOTION RESPONSES
-        # ====================================================
+        # ----------------------------------------------------
+        # EMOTION RESPONSES
+        # ----------------------------------------------------
 
         emotion = emotion.lower()
 
-
         fallback_responses = {
 
-            "joy":
-                (
-                    "That sounds wonderful! "
-                    "I'm glad to hear that."
-                ),
+            "joy": (
+                "That sounds wonderful! "
+                "I'm glad to hear that."
+            ),
 
+            "love": (
+                "That sounds really meaningful. "
+                "It seems like this is something "
+                "you care deeply about."
+            ),
 
-            "love":
-                (
-                    "That sounds really meaningful. "
-                    "It seems like this is something "
-                    "you care deeply about."
-                ),
+            "sadness": (
+                "I'm sorry you're feeling this way. "
+                "I'm here to listen if you'd like "
+                "to talk about it."
+            ),
 
+            "anger": (
+                "It sounds like something really "
+                "upset you. I'm here if you'd like "
+                "to talk about what happened."
+            ),
 
-            "sadness":
-                (
-                    "I'm sorry you're feeling this way. "
-                    "I'm here to listen if you'd like "
-                    "to talk about it."
-                ),
+            "fear": (
+                "It sounds like you're feeling worried "
+                "or scared. I'm here to listen if you'd "
+                "like to talk about it."
+            ),
 
-
-            "anger":
-                (
-                    "It sounds like something really "
-                    "upset you. I'm here if you'd like "
-                    "to talk about what happened."
-                ),
-
-
-            "fear":
-                (
-                    "It sounds like you're feeling worried "
-                    "or scared. I'm here to listen if you'd "
-                    "like to talk about it."
-                ),
-
-
-            "surprise":
-                (
-                    "That sounds unexpected! "
-                    "I'd be interested to hear more "
-                    "about what happened."
-                ),
+            "surprise": (
+                "That sounds unexpected! "
+                "I'd be interested to hear more "
+                "about what happened."
+            ),
         }
-
 
         return fallback_responses.get(
             emotion,
@@ -277,34 +235,21 @@ class ConversationManager:
 
 
     # ========================================================
-    # CHECK GEMINI ERROR
+    # GEMINI ERROR CHECK
     # ========================================================
 
     def _is_quota_error(self, error):
-        """
-        Check whether an exception appears to be related
-        to Gemini API quota/rate limits.
-        """
 
         error_text = str(error).lower()
 
-
         quota_keywords = [
-
             "429",
-
             "resource_exhausted",
-
             "quota",
-
             "rate limit",
-
             "rate_limit",
-
             "too many requests",
-
         ]
-
 
         return any(
             keyword in error_text
@@ -318,37 +263,22 @@ class ConversationManager:
 
     def process_message(self, user_message):
 
-        # ----------------------------------------------------
-        # Validate message
-        # ----------------------------------------------------
-
         if not isinstance(user_message, str):
-
             raise TypeError(
                 "user_message must be a string"
             )
 
-
         user_message = user_message.strip()
 
-
         if not user_message:
-
             raise ValueError(
                 "user_message cannot be empty"
             )
 
 
-        # ====================================================
-        # STEP 1 — LOCAL EMOTION ANALYSIS
-        # ====================================================
-
-        # IMPORTANT:
-        #
-        # Emotion analysis is completely local.
-        #
-        # Therefore it continues working even when
-        # Gemini is unavailable.
+        # ----------------------------------------------------
+        # STEP 1: EMOTION
+        # ----------------------------------------------------
 
         emotion_result = (
             self.emotion_analyzer.analyze(
@@ -356,105 +286,150 @@ class ConversationManager:
             )
         )
 
-
         emotion = emotion_result["emotion"]
-
         confidence = emotion_result["confidence"]
 
+        if confidence < 0.60:
+            emotion_for_response = "uncertain"
+        else:
+            emotion_for_response = emotion
 
-        # ====================================================
-        # STEP 2 — GEMINI RESPONSE
-        # ====================================================
+
+        # ----------------------------------------------------
+        # STEP 2: INTENT
+        # ----------------------------------------------------
+
+        intent = self.intent_detector.detect(
+            user_message
+        )
+
+        # ----------------------------------------------------
+        # SAFETY CHECK
+        # ----------------------------------------------------
+
+        safety_result = self.safety_detector.detect(
+            user_message
+        )
+
+
+        # ----------------------------------------------------
+        # STEP 3: SAFETY / GEMINI
+        # ----------------------------------------------------
 
         assistant_response = None
-
+        response_source = "LOCAL FALLBACK"
         gemini_available = True
 
+        # ----------------------------------------------------
+        # SAFETY CHECK
+        # ----------------------------------------------------
 
-        try:
+        safety_triggered = safety_result["matched"]
 
+        if safety_triggered:
+
+            # High-risk messages bypass Gemini.
             assistant_response = (
-                self.response_generator.generate_response(
-
-                    message=user_message,
-
-                    emotion=emotion,
-
-                    history=self.history
+                self.safety_response.get_response(
+                    safety_result["category"]
                 )
             )
 
-
-            # ------------------------------------------------
-            # Safety check
-            # ------------------------------------------------
-
-            if not assistant_response:
-
-                raise ValueError(
-                    "Gemini returned an empty response."
-                )
-
-
-        except Exception as error:
-
+            response_source = "SAFETY RESPONSE"
             gemini_available = False
 
+        else:
 
-            # -----------------------------------------------
-            # Handle quota/rate-limit errors
-            # -----------------------------------------------
+            # ------------------------------------------------
+            # GEMINI RESPONSE
+            # ------------------------------------------------
 
-            if self._is_quota_error(error):
+            try:
 
-                print(
-                    "\n[Gemini] API quota/rate limit reached."
+                assistant_response = (
+                    self.response_generator.generate_response(
+                        message=user_message,
+                        emotion=emotion,
+                        history=self.history
+                    )
                 )
+
+                # ResponseGenerator handles Gemini errors
+                # internally. Check which source was actually used.
+                if (
+                    self.response_generator.last_response_source
+                    == "LOCAL FALLBACK"
+                ):
+
+                    gemini_available = False
+                    response_source = "LOCAL FALLBACK"
+
+                    # Use the intent-specific fallback instead
+                    # of the generic emotion fallback.
+                    assistant_response = (
+                        self._fallback_response(
+                            message=user_message,
+                            intent=intent,
+                            emotion=emotion,
+                            confidence=confidence
+                        )
+                    )
+
+                else:
+
+                    response_source = "GEMINI"
+
+                if not assistant_response:
+
+                    raise ValueError(
+                        "Gemini returned an empty response."
+                    )
+
+            except Exception as error:
+
+                gemini_available = False
+                response_source = "LOCAL FALLBACK"
+
+                if self._is_quota_error(error):
+
+                    print(
+                        "\n[Gemini] API quota/rate limit reached."
+                    )
+
+                else:
+
+                    print(
+                        "\n[Gemini] Response generation failed."
+                    )
+
+                    print(
+                        f"[Gemini] {error}"
+                    )
 
                 print(
                     "[Gemini] Using local fallback response."
                 )
 
-
-            else:
-
-                print(
-                    "\n[Gemini] Response generation failed."
+                assistant_response = (
+                    self._fallback_response(
+                        message=user_message,
+                        intent=intent,
+                        emotion=emotion,
+                        confidence=confidence
+                    )
                 )
 
-                print(
-                    f"[Gemini] {error}"
-                )
-
-                print(
-                    "[Gemini] Using local fallback response."
-                )
-
-
-            # -----------------------------------------------
-            # Local fallback
-            # -----------------------------------------------
-
-            assistant_response = (
-                self._fallback_response(
-
-                    message=user_message,
-
-                    emotion=emotion,
-
-                    confidence=confidence
-                )
-            )
-
-
-        # ====================================================
-        # STEP 3 — STORE CONVERSATION
-        # ====================================================
+        # ----------------------------------------------------
+        # STEP 4: HISTORY
+        # ----------------------------------------------------
 
         history_entry = {
 
             "user":
                 user_message,
+
+            "intent":
+                intent,
 
             "emotion":
                 emotion,
@@ -467,22 +442,30 @@ class ConversationManager:
 
             "gemini_available":
                 gemini_available,
-        }
 
+            "response_source":
+                response_source,
+
+            "safety":
+                safety_result,
+        }
 
         self.history.append(
             history_entry
         )
 
 
-        # ====================================================
-        # STEP 4 — RETURN RESULT
-        # ====================================================
+        # ----------------------------------------------------
+        # STEP 5: RESULT
+        # ----------------------------------------------------
 
         return {
 
             "message":
                 user_message,
+
+            "intent":
+                intent,
 
             "emotion":
                 emotion,
@@ -498,6 +481,12 @@ class ConversationManager:
 
             "gemini_available":
                 gemini_available,
+
+            "response_source":
+                response_source,
+
+            "safety":
+                safety_result,
         }
 
 
@@ -520,7 +509,7 @@ class ConversationManager:
 
 
 # ============================================================
-# INTERACTIVE CHAT TEST
+# INTERACTIVE TEST
 # ============================================================
 
 if __name__ == "__main__":
@@ -534,36 +523,19 @@ if __name__ == "__main__":
     print("Type 'clear' to clear conversation history.\n")
 
 
-    # --------------------------------------------------------
-    # Create Conversation Manager
-    # --------------------------------------------------------
-
     conversation = ConversationManager()
 
-
-    # --------------------------------------------------------
-    # Interactive Loop
-    # --------------------------------------------------------
 
     while True:
 
         user_message = input("\nYou: ").strip()
 
 
-        # ----------------------------------------------------
-        # Exit
-        # ----------------------------------------------------
-
         if user_message.lower() == "exit":
 
             print("\nEnding conversation...")
-
             break
 
-
-        # ----------------------------------------------------
-        # Clear History
-        # ----------------------------------------------------
 
         if user_message.lower() == "clear":
 
@@ -576,10 +548,6 @@ if __name__ == "__main__":
             continue
 
 
-        # ----------------------------------------------------
-        # Empty Input
-        # ----------------------------------------------------
-
         if not user_message:
 
             print(
@@ -588,10 +556,6 @@ if __name__ == "__main__":
 
             continue
 
-
-        # ----------------------------------------------------
-        # Process Message
-        # ----------------------------------------------------
 
         try:
 
@@ -602,77 +566,87 @@ if __name__ == "__main__":
             )
 
 
-            # ------------------------------------------------
-            # Display Emotion
-            # ------------------------------------------------
+            safety = result.get("safety", {})
+            safety_triggered = safety.get("matched", False)
 
             print(
-                f"\nEmotion: "
-                f"{result['emotion'].upper()}"
+                f"\nIntent: "
+                f"{result['intent'].upper()}"
             )
 
+            if safety_triggered:
 
-            print(
-                f"Confidence: "
-                f"{result['confidence'] * 100:.2f}%"
-            )
+                print(
+                    "\nSafety: HIGH RISK"
+                )
 
+                print(
+                    f"Category: "
+                    f"{safety.get('category', 'SAFETY CONCERN').upper()}"
+                )
 
-            # ------------------------------------------------
-            # Display Response
-            # ------------------------------------------------
+                print(
+                    "Emotion: OVERRIDDEN BY SAFETY"
+                )
+
+                print(
+                    "Confidence: N/A"
+                )
+
+            else:
+
+                print(
+                    f"Emotion: "
+                    f"{result['emotion'].upper()}"
+                )
+
+                print(
+                    f"Confidence: "
+                    f"{result['confidence'] * 100:.2f}%"
+                )
 
             print(
                 f"\nBot: "
                 f"{result['response']}"
             )
 
+            print(
+                f"\nResponse source: "
+                f"{result['response_source']}"
+            )
 
-            # ------------------------------------------------
-            # Show fallback status
-            # ------------------------------------------------
+            if result["response_source"] == "SAFETY RESPONSE":
 
-            if not result["gemini_available"]:
+                print(
+                    "\n[Note: Safety response activated; "
+                    "Gemini was bypassed.]"
+                )
+
+            elif not result["gemini_available"]:
 
                 print(
                     "\n[Note: Gemini was unavailable, "
                     "so a local fallback response was used.]"
                 )
-
-
         except Exception as error:
-
-            # ------------------------------------------------
-            # This should only catch unexpected local errors.
-            #
-            # Gemini errors should already have been handled
-            # inside process_message().
-            # ------------------------------------------------
 
             print(
                 f"\nError: {error}"
             )
 
 
-    # ========================================================
-    # CONVERSATION FINISHED
-    # ========================================================
-
     print(
         "\n" + "=" * 60
     )
-
 
     print(
         "CONVERSATION ENDED"
     )
 
-
     print(
         f"Total conversation turns: "
         f"{len(conversation.history)}"
     )
-
 
     print(
         "=" * 60
